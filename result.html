@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Results</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center" id="results-title"></h1>
+        <p class="text-center" id="score"></p>
+        <h2 class="mt-4">Feedback</h2>
+        <div id="feedback"></div>
+        <a href="index.html" class="btn btn-primary btn-block">Back to Difficulty Selection</a>
+    </div>
+
+    <script>
+        // Display Results
+        const userName = prompt("Please enter your name");
+        const totalScore = localStorage.getItem('totalScore');
+        const feedback = JSON.parse(localStorage.getItem('feedback'));
+        const resultsTitle = document.getElementById('results-title');
+        const scoreDisplay = document.getElementById('score');
+        const feedbackDisplay = document.getElementById('feedback');
+
+        resultsTitle.innerText = `Results for ${userName}`;
+        scoreDisplay.innerText = `Total Score: ${totalScore} out of ${feedback.length}`;
+
+        feedback.forEach(entry => {
+            const feedbackEntry = document.createElement('div');
+            feedbackEntry.classList.add('feedback-entry');
+            feedbackEntry.innerHTML = `
+                <strong>Question:</strong> ${entry.question_text} <br>
+                <strong>Your Answer:</strong> ${entry.your_answer}<br>
+                <strong>Correct Answer:</strong> ${entry.correct_answer}<br>
+                <span class="${entry.is_correct ? 'text-success' : 'text-danger'}">
+                    ${entry.is_correct ? "Correct" : "Incorrect"}
+                </span>
+                <hr>
+            `;
+            feedbackDisplay.appendChild(feedbackEntry);
+        });
+    </script>
+</body>
+</html>

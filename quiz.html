@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center" id="quiz-title"></h1>
+        <form id="quiz-form"></form>
+        <div class="text-center">
+            <button type="button" class="btn btn-success btn-block" id="submit-quiz">Submit Quiz</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = {
+            easy: [
+                { id: 1, question: 'What is 2 + 2?', correct_answer: '4', options: ['3', '4', '5', '6'] },
+                { id: 2, question: 'What color is the sky?', correct_answer: 'blue', options: ['blue', 'green', 'red', 'yellow'] },
+                { id: 3, question: 'What is the capital of the United States?', correct_answer: 'Washington, D.C.', options: ['New York', 'Los Angeles', 'Washington, D.C.', 'Chicago'] },
+                { id: 4, question: 'How many legs does a spider have?', correct_answer: '8', options: ['6', '8', '10', '12'] },
+                { id: 5, question: 'What is the opposite of hot?', correct_answer: 'cold', options: ['hot', 'warm', 'cold', 'cool'] },
+                { id: 6, question: 'What shape has three sides?', correct_answer: 'triangle', options: ['square', 'circle', 'triangle', 'rectangle'] },
+                { id: 7, question: 'What is the first letter of the English alphabet?', correct_answer: 'A', options: ['B', 'A', 'C', 'D'] },
+                { id: 8, question: 'How many months are there in a year?', correct_answer: '12', options: ['10', '11', '12', '13'] },
+                { id: 9, question: 'What is 5 - 3?', correct_answer: '2', options: ['1', '2', '3', '4'] },
+                { id: 10, question: 'What do you call a baby cat?', correct_answer: 'kitten', options: ['puppy', 'kitten', 'cub', 'calf'] },
+            ],
+            medium: [
+                { id: 1, question: 'Is Paris the capital of France?', correct_answer: 'true' },
+                { id: 2, question: 'Is Jupiter the largest planet?', correct_answer: 'true' },
+                { id: 3, question: 'Did William Shakespeare write "Romeo and Juliet"?', correct_answer: 'true' },
+                { id: 4, question: 'Is H2O the chemical symbol for water?', correct_answer: 'true' },
+                { id: 5, question: 'Is diamond the hardest natural substance?', correct_answer: 'true' },
+                { id: 6, question: 'Is the main ingredient in guacamole tomatoes?', correct_answer: 'false' },
+                { id: 7, question: 'Did the Titanic sink in 1912?', correct_answer: 'true' },
+                { id: 8, question: 'Is the Amazon the longest river?', correct_answer: 'false' },
+                { id: 9, question: 'Did Leonardo da Vinci paint the Mona Lisa?', correct_answer: 'true' },
+                { id: 10, question: 'Is 1 a prime number?', correct_answer: 'false' },
+            ],
+            hard: [
+                { id: 1, question: 'What is the chemical symbol for gold?', correct_answer: 'Au' },
+                { id: 2, question: 'What is the theory of relativity?', correct_answer: 'E=mc²' },
+                { id: 3, question: 'Who developed the theory of evolution?', correct_answer: 'Charles Darwin' },
+                { id: 4, question: 'What is the capital city of Australia?', correct_answer: 'Canberra' },
+                { id: 5, question: 'What is the second law of thermodynamics?', correct_answer: 'Entropy of an isolated system always increases.' },
+                { id: 6, question: 'What is the main language spoken in Brazil?', correct_answer: 'Portuguese' },
+                { id: 7, question: 'Who was the first person to walk on the moon?', correct_answer: 'Neil Armstrong' },
+                { id: 8, question: 'What is the hardest rock?', correct_answer: 'Diamond' },
+                { id: 9, question: 'What is the speed of light?', correct_answer: '299,792 kilometers per second' },
+                { id: 10, question: 'What is the value of pi to two decimal places?', correct_answer: '3.14' },
+            ]
+        };
+
+        const difficulty = localStorage.getItem('difficulty');
+        const selectedQuestions = questions[difficulty];
+        const quizTitle = document.getElementById('quiz-title');
+        const quizForm = document.getElementById('quiz-form');
+
+        quizTitle.innerText = `Quiz - ${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} Level`;
+
+        selectedQuestions.forEach(question => {
+            const questionDiv = document.createElement('div');
+            questionDiv.classList.add('form-group');
+
+            if (difficulty === 'easy') {
+                questionDiv.innerHTML = `<label>${question.question}</label>`;
+                question.options.forEach(option => {
+                    questionDiv.innerHTML += `
+                        <div class="form-check">
+                            <input type="radio" class="form-check-input" name="answer_${question.id}" value="${option}">
+                            <label class="form-check-label">${option}</label>
+                        </div>`;
+                });
+            } else if (difficulty === 'medium') {
+                questionDiv.innerHTML = `
+                    <label>${question.question}</label>
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" name="answer_${question.id}" value="true">
+                        <label class="form-check-label">True</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" name="answer_${question.id}" value="false">
+                        <label class="form-check-label">False</label>
+                    </div>`;
+            } else {
+                questionDiv.innerHTML = `
+                    <label>${question.question}</label>
+                    <input type="text" class="form-control" name="answer_${question.id}">`;
+            }
+
+            quizForm.appendChild(questionDiv);
+        });
+
+        document.getElementById('submit-quiz').addEventListener('click', function() {
+            let allAnswered = true;
+            const feedback = [];
+            let totalScore = 0;
+
+            selectedQuestions.forEach(question => {
+                const radioAnswers = document.querySelectorAll(`input[name="answer_${question.id}"]:checked`);
+                const textAnswer = document.querySelector(`input[name="answer_${question.id}"]`);
+                let userAnswer = "";
+
+                if (difficulty === 'easy' || difficulty === 'medium') {
+                    if (radioAnswers.length === 0) {
+                        allAnswered = false;
+                    } else {
+                        userAnswer = radioAnswers[0].value.trim().toLowerCase();
+                    }
+                } else if (difficulty === 'hard') {
+                    if (textAnswer && textAnswer.value.trim() === "") {
+                        allAnswered = false;
+                    } else {
+                        userAnswer = textAnswer.value.trim().toLowerCase();
+                    }
+                }
+
+                if (userAnswer !== "") {
+                    const correctAnswer = question.correct_answer.toLowerCase();
+                    const isCorrect = userAnswer === correctAnswer;
+                    if (isCorrect) totalScore++;
+
+                    feedback.push({
+                        question_id: question.id,
+                        question_text: question.question,
+                        your_answer: userAnswer,
+                        correct_answer: correctAnswer,
+                        is_correct: isCorrect
+                    });
+                }
+            });
+
+            if (!allAnswered) {
+                alert('Please answer all questions before submitting.');
+                return;
+            }
+
+            localStorage.setItem('totalScore', totalScore);
+            localStorage.setItem('feedback', JSON.stringify(feedback));
+            window.location.href = 'result.html';
+        });
+    </script>
+</body>
+</html>

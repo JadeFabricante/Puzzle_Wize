@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Quiz Difficulty</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">Puzzle Wize</h2>
+        <h1 class="text-center">Select Quiz Difficulty</h1>
+        <form id="difficulty-form">
+            <div class="form-group">
+                <label for="difficulty">Choose Difficulty:</label>
+                <select class="form-control" name="difficulty" id="difficulty" required>
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard">Hard</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-success btn-block">Start Quiz</button>
+        </form>
+    </div>
+
+    <script>
+        // Difficulty Selection
+        document.getElementById('difficulty-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const difficulty = document.getElementById('difficulty').value;
+            localStorage.setItem('difficulty', difficulty);
+            window.location.href = 'quiz.html';
+        });
+    </script>
+</body>
+</html>
